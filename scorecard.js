@@ -40,8 +40,8 @@ function getOverallScore(){
 function submitToHubSpot(name,email,biz,phone){
   try{
     var nameParts=name.trim().split(' ');
-    var firstName=nameParts[0]||'';
-    var lastName=nameParts.slice(1).join(' ')||'';
+    var firstName=document.getElementById('modal-firstname')?document.getElementById('modal-firstname').value.trim():nameParts[0]||'';
+    var lastName=document.getElementById('modal-lastname')?document.getElementById('modal-lastname').value.trim():nameParts.slice(1).join(' ')||'';
     var fields=[{name:'firstname',value:firstName},{name:'lastname',value:lastName},{name:'email',value:email},{name:'company',value:biz}];
     if(phone)fields.push({name:'phone',value:phone});
     fetch('https://api.hsforms.com/submissions/v3/integration/submit/21247897/42be6bb3-4276-4cbe-9586-bac58ac14a4c',{
@@ -64,7 +64,7 @@ function syncLandingToResults(){
 
 // Sync modal fields into results header live (biz name updates in real time)
 function syncModalToResults(){
-  const name=document.getElementById('modal-name').value.trim();
+  const name=document.getElementById('modal-firstname').value.trim();
   const biz=document.getElementById('modal-biz').value.trim();
   if(name)document.getElementById('res-person').textContent=name;
   if(biz)document.getElementById('res-name').textContent=biz;
@@ -262,9 +262,9 @@ function showResults(){
 // ---- PDF Modal ----
 function openPdfModal(){
   // Pre-fill modal from whatever we already have
-  const modalName=document.getElementById('modal-name');
+  const modalFirstname=document.getElementById('modal-firstname');
   const modalBiz=document.getElementById('modal-biz');
-  if(!modalName.value && userData.name) modalName.value=userData.name;
+  if(!modalFirstname.value && userData.name) modalFirstname.value=userData.name.split(' ')[0]||userData.name;
   if(!modalBiz.value && userData.biz && userData.biz!=='Your Business') modalBiz.value=userData.biz;
   document.getElementById('pdf-modal-overlay').classList.add('active');
   document.body.style.overflow='hidden';
@@ -276,12 +276,12 @@ function closePdfModal(){
 }
 
 function submitModalAndGeneratePDF(){
-  const name=document.getElementById('modal-name').value.trim();
+  const name=document.getElementById('modal-firstname').value.trim();
   const biz=document.getElementById('modal-biz').value.trim();
   const email=document.getElementById('modal-email').value.trim();
   const phone=document.getElementById('modal-phone').value.trim();
   let hasError=false;
-  if(!name){document.getElementById('modal-name').classList.add('input-error');hasError=true;}
+  if(!firstname){document.getElementById('modal-firstname').classList.add('input-error');hasError=true;}
   const emailValid=/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
   if(!email||!emailValid){document.getElementById('modal-email').classList.add('input-error');hasError=true;}
   if(hasError)return;
